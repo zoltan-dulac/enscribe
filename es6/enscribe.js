@@ -1,0 +1,152 @@
+/* enscribe.js — ES module core */
+
+const en = {
+    players: new Map(),
+    mods: new Map(),     // type -> module (html5|vimeo|youtube|…)
+    urls: new Map(),     // type -> absolute URL to plugin file
+    ready: false
+  };
+  
+  // Base-path from this file
+  const baseURL = new URL('.', import.meta.url);
+  
+  // Default URL resolver: ./enscribe-${type}.js next to enscribe.js
+  const defaultURLFor = (type) => new URL(`./enscribe-${type}.js`, baseURL).href;
+  
+  // Public: allow apps to override plugin URL mapping
+  export function setPluginURL(type, url) {
+    en.urls.set(type, new URL(url, baseURL).href);
+  }
+  
+  // Public: register a plugin module {setup, control, getVolume, setVolume, updateSource, ...}
+  export function register(type, mod) {
+    en.mods.set(type, mod);
+  }
+  
+  // Helpers used by plugins
+  export function htmlToText(html) {
+    const d = document.createElement('div');
+    d.appendChild(html.cloneNode(true));
+    return d.textContent || '';
+  }
+  
+  export function getCueData(cue) {
+    const h = cue.getCueAsHTML();
+    return { content: htmlToText(h), pause: !!h.querySelector('span.pause') };
+  }
+  
+  // Speak + (optional) pause/duck
+  export async function speak(content, pause, player) {
+    const mod = en.mods.get(player.type);
+    if (!mod) return;
+  
+    const u = new SpeechSynthesisUtterance(content);
+    if (mod.getVolume) u.volume = await mod.getVolume(player);
+  
+    const el = player.element;
+    const shouldPause = pause || el.hasAttribute('data-ad-global-pause');
+    const duckAttr = el.getAttribute('data-ad-ducking');
+    const shouldDuck = !shouldPause && duckAttr != null;
+    let prev;
+  
+    if (shouldDuck && mod.getVolume && mod.setVolume) {
+      prev = await mod.getVolume(player);
+      await mod.setVolume(player, +duckAttr || 0.25);
+    }
+  
+    player.ADPlaying = true;
+    speechSynthesis.speak(u);
+    if (shouldPause && mod.control) mod.control(player, 'pause');
+  
+    u.onend = async () => {
+      if (shouldPause && mod.control) mod.control(player, 'play');
+      if (shouldDuck && mod.setVolume) await mod.setVolume(player, prev);
+      setTimeout(() => (player.ADPlaying = false), 100);
+    };
+  }
+  
+  // Utility: script loader (rarely needed now that we use import(); still here if you want it)
+  export function loadScript(src) {
+    return new Promise((r) => {
+      const s = document.createElement('script');
+      s.onload = r;
+      s.src = src;
+      document.head.appendChild(s);
+    });
+  }
+  
+  // Dynamic import for a given type
+  async function ensure(type) {
+    if (en.mods.has(type)) return;
+    const url = en.urls.get(type) || defaultURLFor(type);
+    const mod = await import(url);
+    // plugin can either default-export the module object or export {plugin}
+    register(type, mod.default || mod.plugin || mod);
+  }
+  
+  // Map DOM -> players
+  export function createPlayerMappings() {
+    document.querySelectorAll('[data-AD-player]').forEach((el) => {
+      const type = el.dataset.adPlayerType;
+      let standardSource = el.querySelector('source')?.src || el.src;
+      if (type === 'youtube') {
+        const m = /embed\/([^?]+)/.exec(el.src);
+        standardSource = m ? m[1] : '';
+      }
+      en.players.set(el.id, {
+        element: el,
+        type,
+        standardSource,
+        ADSource: el.dataset.adVideoSource,
+        enabled: false,
+        ADPlaying: false,
+      });
+    });
+  }
+  
+  // Public: let apps manually toggle a player by id
+  export function setEnabled(playerId, enabled) {
+    const p = en.players.get(playerId);
+    if (!p) return;
+    p.enabled = enabled;
+    const mod = en.mods.get(p.type);
+    if (p.type === 'html5' && mod?.setHTML5TrackMode) mod.setHTML5TrackMode(p);
+  }
+  
+  // Hook up UI buttons
+  export function setupToggleButtons() {
+    document.querySelectorAll('[data-AD-button]').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const el = e.currentTarget;
+        const p = en.players.get(el.dataset.adAssociatedPlayer);
+        if (!p) return;
+        p.enabled = !p.enabled;
+        el.classList.toggle('active');
+        el.setAttribute('aria-label', `Turn ${p.enabled ? 'off' : 'on'} audio descriptions`);
+        const mod = en.mods.get(p.type);
+        if (p.ADSource && mod?.updateSource) {
+          await mod.updateSource(p, p.enabled ? 'AD' : 'standard');
+        } else if (p.type === 'html5' && mod?.setHTML5TrackMode) {
+          mod.setHTML5TrackMode(p);
+        }
+      });
+    });
+  }
+  
+  // Public: initialize everything (dynamic plugin loading by type)
+  export async function init() {
+    if (en.ready) return;
+    en.ready = true;
+  
+    createPlayerMappings();
+  
+    // Load & setup each player’s plugin
+    for (const p of en.players.values()) {
+      await ensure(p.type);
+      const mod = en.mods.get(p.type);
+      if (mod?.setup) await mod.setup(p, { speak, getCueData });
+    }
+  
+    setupToggleButtons();
+  }
+  

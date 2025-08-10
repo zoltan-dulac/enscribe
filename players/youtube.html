@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:;base64,=">
+</head>
+<body>
+  <h1>YouTube Examples</h1>
+  <div class="container-video">
+    <h2>Audio Descriptions made with VTT file</h2>
+    <iframe 
+      id="player-1" 
+      autoplay 
+      width="560" height="315"
+      data-AD-player
+      data-AD-player-type="youtube" 
+      data-AD-player-VTT-path="../vtt/youtube-audio-descriptions.vtt"
+      data-AD-ducking="20%"
+      src="https://www.youtube.com/embed/MfLXHHeUS2s?enablejsapi=1" 
+      frameborder="0"
+      allowfullscreen></iframe>
+    <button 
+      data-AD-button
+      data-AD-associated-player="player-1"
+      class="icon-audio-descriptions"
+      aria-label="Turn on audio descriptions">
+    </button>
+  </div>
+
+  <div class="container-video">
+    <h2>Audio Descriptions from separate video rendition</h2>
+    <iframe 
+      id="player-2" 
+      autoplay 
+      width="560" height="315"
+      data-AD-player
+      data-AD-player-type="youtube"
+      data-AD-player-VTT-path="../vtt/youtube-audio-descriptions.vtt"
+      src="https://www.youtube.com/embed/euI8FJvfmqc?enablejsapi=1" 
+      data-AD-video-source="f3C3U56Jlek"
+      frameborder="0"
+      allowfullscreen></iframe>
+    <button 
+      data-AD-button
+      data-AD-associated-player="player-2"
+      class="icon-audio-descriptions"
+      aria-label="Turn on audio descriptions">
+    </button>
+  </div>
+
+  <div class="container-video">
+    <h2>Audio Descriptions from separate video rendition</h2>
+    <iframe 
+      id="player-3" 
+      autoplay 
+      width="560" height="315"
+      data-AD-player
+      data-AD-player-type="youtube"
+      data-AD-player-VTT-path="../vtt/dialog-document__html5--desc.vtt"
+      data-ad-global-pause="true"
+      src="https://www.youtube.com/embed/NINogq4BS68?enablejsapi=1" 
+      frameborder="0"
+      allowfullscreen></iframe>
+    <button 
+      data-AD-button
+      data-AD-associated-player="player-3"
+      class="icon-audio-descriptions"
+      aria-label="Turn on audio descriptions">
+    </button>
+  </div>
+
+
+  <script type="module">
+    import { init } from '../es6/enscribe.js';
+    init();
+  </script>
+</body>
+</html>

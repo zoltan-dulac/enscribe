@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<configuration>
+  <system.webServer>
+    <staticContent>
+      <mimeMap fileExtension=".vtt" mimeType="text/vtt" />
+    </staticContent>
+  </system.webServer>
+</configuration>

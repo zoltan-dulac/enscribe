@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:;base64,=">
+</head>
+<body>
+  <div class="container-video">
+    <h1>Vimeo</h1>
+    <iframe 
+      id="player-1"
+      data-AD-player
+      data-AD-player-type="vimeo" 
+      data-AD-player-VTT-path="../vtt/vimeo-audio-descriptions.vtt"
+      src="https://player.vimeo.com/video/76979871?h=8272103f6e" width="640" height="360" frameborder="0"
+      allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    <button 
+      data-AD-button
+      data-AD-associated-player="player-1"
+      class="icon-audio-descriptions"
+      aria-label="Turn on audio descriptions">
+    </button>
+  </div>
+  <script type="module">
+    import { init } from '../es6/enscribe.js';
+    init();
+  </script>
+</body>
+</html>

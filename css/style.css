@@ -1,0 +1,133 @@
+body, html {
+  margin: 0;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+h1 {
+  /*text-decoration: underline;*/
+}
+h1.html5 {
+  display: inline;
+  vertical-align: super;
+  padding: 0px;
+  margin: 0px;
+  float: right;
+}
+h1,h3 {
+  /*text-align: center;*/
+}
+html {
+  height: 100%;
+}
+body {
+  background: #000;
+}
+video, iframe {
+  max-width: 100%; 
+ /*margin: auto;*/
+}
+.container-video {
+  width: 100vw;
+  max-width: 800px;
+  margin: auto;
+}
+@media (max-width: 991px) {
+  .container-video {
+    width: 100%;
+  }
+}
+button.icon-audio-descriptions {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  border: solid 1px transparent;
+  caret-color: rgba(0,0,0,0);
+  background-image: url('../img/icon-audio-description--off.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  display:block;
+} 
+
+
+/* Active State of AD Button */
+
+button.icon-audio-descriptions.active  {
+  background-image: url('../img/icon-audio-description.svg');
+}
+
+
+.get-time {
+  width: 250px;
+  height: 50px;
+  margin: auto;
+  margin-top: 50px;
+  display: block;
+  font-size: 20px;
+}
+
+h1, p {
+  font-family: sans-serif;
+  /*text-align: center;*/
+  padding: 20px;
+}
+
+.txt, select, form > div {
+  display: block;
+  margin: 0 auto;
+  font-family: sans-serif;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.txt {
+  width: 80%;
+}
+
+select {
+  width: 83%;
+}
+
+form > div {
+  width: 81%;
+}
+
+.txt, form > div {
+  margin-bottom: 10px;
+  overflow: auto;
+}
+
+.clearfix {
+  clear: both;
+}
+
+label {
+  float: left;
+  width: 10%;
+  line-height: 1.5;
+}
+
+.rate-value, .pitch-value {
+  float: right;
+  width: 5%;
+  line-height: 1.5;
+}
+
+#rate, #pitch {
+  float: right;
+  width: 81%;
+}
+
+.controls {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.controls button {
+  padding: 10px;
+}
+
+iframe {
+  display: block;
+  /*margin-bottom: 50px;*/
+}

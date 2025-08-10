@@ -1,0 +1,225 @@
+Todo:
+
+add SCSS + build process w/grunt
+
+setting for multiple videos on same page
+
+cookies for saving preferences$ + clarify behavior with UX
+
+correct HTML tag (i.e. <button>) and aria attributes for AD icon
+
+load different versions of video options - src
+
+get audio description explicitly (not with index)
+
+create dist/release in github after first for easy use after initial dev
+
+licensing copy
+
+-----
+Add to docs:
+
+vanillaJS to limit dependency conflicts? i.e jquery cookiejs - add to documentation 
+
+dependencies - video video player api
+
+------
+Video URLs:
+
+ video-one (also hosted locally for testing): https://www.gileadhiv.com/static/blind-angels_trailer-b882aa5b7d039e16b48c024e23764bc0.mp4
+ 
+
+-------
+
+*** fix bug when pause true follows pause false, AD not being uttered" ***
+
+closed captions - renable / test support for vimeo + youtube
+
+*future optimization - adding multiple type support? But very edge case / low priority
+
+(or maybe not?) - test with console logs: Refactor / simplify onYouTubePlayerReady to stop calling for every player instance on callback -
+
+error handling - youtube video swap when playback hasn't started yet
+
+vimeo - refactor src to just pass video ID
+/* TODO:
+ Create less generic name for global variables to prevent namespace collisions
+ I.e. 'players' => 'ADPlayers'
+ */
+
+ test swapping with actual AD video
+
+ player 'type' variable definitions may have decoupled
+
+ *downside of CDN - if there's a problem all sites using it will be affected
+
+ *potential bug - different src video type on swap (handle with attribute?)
+
+ *potential bug - multiple <video> <source>'s - ask team (video swap)
+
+ look into minify/obfuscator
+ 
+ change   if (players[name].element.dataset.adVideoSrc) to reusable function 
+
+ use same approach for data attributes (dataset not get attribute)
+
+create youtube/vimeo tracks - refactor to use same function?
+
+prevet getCurrentTime bug - loading race issue?
+
+refactor - remove player name data attribute, just use ID?
+
+general refactoring - player.youtube/vimeo to just player in speak() function and other places?
+
+rename player.playing to ADplaying, same with other attributes
+
+prevent/silence youtube errors
+
+Add note for extra youtube ID attribute
+
+Change 'data-AD-player' to just 'data-AD'?
+
+YouTube optimization - set and clear polling intervals based on active player
+
+Note youtube overlay on pause can be closed
+
+Note YouTube error may irrelevant
+
+make uniform convention ehen calling object["property"] vs. object.property
+
+refactor getAttribute to dataset + update attribute naming as needed
+* text track mode is also set to <video> proxy for Vimeo and Youtube - this may need to be included in AD button toggle functionality - and ensure captions track is included somehow?
+
+possible bug where AD is quickly toggled produces duplicate utterance - discovered on HTML multiple videos
+
+devise way to set playerType once
+
+look out for possible race condition after turning off captions and seeking to start of HTML5 video
+
+look into whether HTML5 captions dialog readout can be changed to be less confusing 
+
+refactor players[name];
+
+refactor conditional execution of script to avoid entirely if no relevant data attribute
+
+try catch probably likely necessary (if script gets bundled)
+
+also create sample captions file
+
+refactor to prevent using setTimeouts for ADPlaying etc.
+
+* pass attribute to 'ignore' if no AD file found
+
+Feature or bug: 
+** captions do work with AD sometimes ** must be state-dependent
+
+- captions menu dialog 'audio descriptions' not staying coupled to AD button
+- captions button 'off' decouples from AD
+- AD or captions but not both
+
+test work with screen reader
+
+textTracks[0] vs [1] make sure to semantically differentiate explicitly
+throw error if more than 1 VTT descriptions track?
+
+Create less generic name for global variables to prevent namespace collisions
+
+AD button - 2 variations multiple for videos, or just 1
+
+error detection 
+- if each video does not have unique ID, 
+- if multiple player types detected
+
+add comments  + documentation
+
+abstract initial function to something named (not running line-by-line in global scope)
+
+add conditional to gracefully throw error if more than one player type OR support simultaneously multiple player types? - maybe flag option for build/dist
+
+add an exception if AD not needed for specific video? (or maybe just remove AD attribute)
+
+handle edge cases like Veeva?
+
+Each AD button will need data-attribute to correspond to relevant video
+
+create sample multi video example on branch for Gilead HIV voices page
+
+aria AD button placement - option outside perimiter of modal
+
+aria AD button - ensure proper description added by developers
+
+clear youtube player intervals when not in use to save memory
+
+demo and dist directories
+
+CDN prompt browser cache clear ability?
+
+have player fail silently if CDN error
+
+replace attribute selector with dataset object where relevant
+
+variable declarations - remove 'undefined' where possible
+
+add extended notes to script 
+
+note - youtubePlayerStateChange available if needed
+
+way to initalize youtube iframes with multiple ID's - set dynamically from data attribute
+
+Address bug if multiple players playing simultaneously?
+
+Add comments for AD functions not relevant to HTML5 player
+
+vimeo script needs to be conditionally loaded (and don't forget url param for youtube enablejsapi)
+
+add window load event listener to html5 switch case 
+add versions of vimeo/youtube/html players library built upon
+
+learn how to include captions on every player
+
+consider fixing UX bug where autoplay occurs after pressing "pause"
+
+change audioDescriptionOn to "enabled" - semantics
+
+youtube version - set a 'while' specific to each player to prevent overlapping
+
+use CDN if bug to deploy everywhere
+
+** how to - source path to VTT file in player HTML data parameter
+
+make var/const/let use consistent
+
+ensure vimeo direct link does not introduce any analytics bugs
+
+also have analytics verify? maybe not needed, stills standard Vimeo player
+
+fix bug to prevent closed captions settings from interfering with AD settings
+
+needs to fail silently if youtube or vimeo api's change (also perhaps place at end of other scripts?)
+
+conditional for when captions are included already
+
+make cuechange event handler specific to VTT state (so no conflict with captions)
+fix race condition VTT loading on staging
+
+done / no longer relevant / deferred: 
+
+
+setting default volume + conditionally pausing by default?
+
+fix race condition bug when playing video immediately after load affecting first cue
+
+remove cursor blinking bug when clicking audio description
+
+how to toggle audio descriptions without losing closed captions  / resolve other realtime play track conflict issues etc.
+
+maybe needed - add conditional to ensure video still loads without audio track 
+
+add option for preventing removal of 'disabled' on metadataload (for videos meant to be disabled) 
+- this turned out to be controls attribute, may no longer be relevant
+
+----
+
+Low Priority
+
+UX improvement - prevent autoplay again when pausing during AD
