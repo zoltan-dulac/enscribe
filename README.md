@@ -1,4 +1,4 @@
-# AX-Audio-Descriptions
+# Enscribe - Add support to Audio Descriptions for your video using WebVTT.
 
 This library adds an audio description (AD) feature alongside popular video players. Including audio descriptions is a requirement of [WCAG accessibility AA conformance guidelines](https://www.w3.org/WAI/WCAG21/quickref/#audio-description-prerecorded). The following players are currently supported: **HTML5**, **Vimeo**, and **YouTube**.  
 
