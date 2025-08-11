@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:;base64,=">
+</head>
+<body>
+  <div class="container-video">
+    <video 
+      id="player-1"
+      data-AD-player
+      data-AD-player-type="html5" 
+      controls>
+      <source src="https://www.gileadhiv.com/static/blind-angels_trailer-b882aa5b7d039e16b48c024e23764bc0.mp4"
+        type="video/mp4">
+      <track src="../vtt/captions.vtt" kind="captions" srclang="en" label="English">
+      <track src="../vtt/html5-audio-descriptions.vtt" kind="descriptions" srclang="en" label="Audio Descriptions">
+    </video>
+    <button 
+      data-AD-button
+      data-AD-associated-player="player-1"
+      class="icon-audio-descriptions"
+      aria-label="Turn on audio descriptions">
+    </button>
+    <h1 class="html5">HTML5</h1>
+  </div>
+  <script>enableRootDir="../dist/"</script>
+  <script src="../dist/enscribe.iife.js"></script>
+  <script src="../dist/enscribe-html5.iife.js"></script>
+</body>
+</html>

@@ -8,8 +8,10 @@ const en = {
   };
   
   // Base-path from this file
-  const baseURL = new URL('.', import.meta.url);
-  
+  const isES6Module = !(document.currentScript);
+  console.log('es6mod', isES6Module);
+  const baseURL = new URL('.', isES6Module ? import.meta.url : location.origin + location.pathname.replace(/\/[^/]*$/, '/') + enableRootDir);
+  console.log('url', baseURL);
   // Default URL resolver: ./enscribe-${type}.js next to enscribe.js
   const defaultURLFor = (type) => new URL(`./enscribe-${type}.js`, baseURL).href;
   
@@ -135,6 +137,7 @@ const en = {
   
   // Public: initialize everything (dynamic plugin loading by type)
   export async function init() {
+    console.log('init'); 
     if (en.ready) return;
     en.ready = true;
   
@@ -149,4 +152,6 @@ const en = {
   
     setupToggleButtons();
   }
+
+  init();
   
