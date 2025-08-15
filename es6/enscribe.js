@@ -1,5 +1,5 @@
 /* enscribe.js — ES module core */
-import { voiceManager } from './voice-manager.js';
+
 const en = {
     players: new Map(),
     mods: new Map(),     // type -> module (html5|vimeo|youtube|…)
@@ -36,14 +36,39 @@ const en = {
     const h = cue.getCueAsHTML();
     return { content: htmlToText(h), pause: !!h.querySelector('span.pause') };
   }
+
+  async function getUtterance(text, player, preferredLocales) {
+    if (player?.element?.getAttribute("data-AD-use-readium") === "true") {
+      // Lazy-load Readium integration only when needed
+      const { makeUtterance } = await import("./enscribe-voice.js");
+      return await makeUtterance(text, preferredLocales);
+    }
+  
+    // Fallback: plain SpeechSynthesisUtterance without Readium
+    const u = new SpeechSynthesisUtterance(text);
+    return u;
+  }
+
+  export async function speakDescription(text, player, opts = {}) {
+    const u = await getUtterance(text, player, preferred);
+    if (opts.rate != null)  u.rate = opts.rate;
+    if (opts.pitch != null) u.pitch = opts.pitch;
+    if (opts.volume != null)u.volume = opts.volume;
+    speechSynthesis.speak(u);
+  }
   
   // Speak + (optional) pause/duck
   export async function speak(content, pause, player) {
     const mod = en.mods.get(player.type);
     if (!mod) return;
   
-    const u = new SpeechSynthesisUtterance(content);
-    voiceManager.applyTo(u, { targetRate: 1.0 }); 
+    //const u = new SpeechSynthesisUtterance(content);
+    const preferred = [
+          navigator.language,
+          navigator.language?.split("-")[0],
+          "en-US"
+        ];
+    const u = await getUtterance(content, player, preferred);
     if (mod.getVolume) u.volume = await mod.getVolume(player);
   
     const el = player.element;
@@ -152,14 +177,6 @@ const en = {
     }
   
     setupToggleButtons();
-
-    voiceManager.init({
-      localeHints: [navigator.language, navigator.language.split('-')[0], 'en-US'],
-      preferLocal: false,     // set true if you want offline-first
-      allowCloud: true,       // set false if you must avoid remote/neural voices
-      useCache: true          // cache chosen voice + rate multipliers in localStorage
-    });
-    await voiceManager.ready(); 
   }
 
   init();
