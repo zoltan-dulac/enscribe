@@ -1,5 +1,5 @@
 /* enscribe.js — ES module core */
-
+import { voiceManager } from './voice-manager.js';
 const en = {
     players: new Map(),
     mods: new Map(),     // type -> module (html5|vimeo|youtube|…)
@@ -43,6 +43,7 @@ const en = {
     if (!mod) return;
   
     const u = new SpeechSynthesisUtterance(content);
+    voiceManager.applyTo(u, { targetRate: 1.0 }); 
     if (mod.getVolume) u.volume = await mod.getVolume(player);
   
     const el = player.element;
@@ -151,6 +152,14 @@ const en = {
     }
   
     setupToggleButtons();
+
+    voiceManager.init({
+      localeHints: [navigator.language, navigator.language.split('-')[0], 'en-US'],
+      preferLocal: false,     // set true if you want offline-first
+      allowCloud: true,       // set false if you must avoid remote/neural voices
+      useCache: true          // cache chosen voice + rate multipliers in localStorage
+    });
+    await voiceManager.ready(); 
   }
 
   init();

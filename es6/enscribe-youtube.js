@@ -1,5 +1,5 @@
 // enscribe-youtube.js
-import { register, getCueData, speak, createExternalTracksFor } from './enscribe.js';
+import { register, getCueData, speak } from './enscribe.js';
 
 let ytReady;
 function loadYT() {
@@ -18,7 +18,7 @@ const mod = {
   setVolume: (p, v) => p.youtube.setVolume(Math.round(v * 100)),
   control: (p, action) => p.youtube[action + 'Video'](),
 
-  updateSource: async (p, which) => {
+  async updateSource(p, which) {
     const id = which === 'AD' ? p.ADSource : p.standardSource;
     const cur = p.youtube.getCurrentTime();
     const paused = p.youtube.getPlayerState() === 2;
@@ -32,8 +32,19 @@ const mod = {
   },
 
   async setup(p) {
-    // Use shared helper for hidden VTT proxy
-    await createExternalTracksFor(p);
+    // If not using an alternate AD video, build a proxy descriptions track
+    if (!p.element.dataset.adVideoSource) {
+      const v = document.createElement('video');
+      const t = Object.assign(document.createElement('track'), {
+        kind: 'descriptions', label: 'Audio Descriptions', srclang: 'en',
+        src: p.element.dataset.adPlayerVttPath
+      });
+      v.appendChild(t);
+      const tt = v.textTracks[0];
+      tt.mode = 'hidden';
+      t.addEventListener('load', () => { p.ADTrack = tt; }, { once: true });
+      document.body.appendChild(v);
+    }
 
     await loadYT();
     p.youtube = new YT.Player(p.element.id, {
@@ -41,23 +52,19 @@ const mod = {
         onStateChange: (e) => {
           if (e.data !== YT.PlayerState.UNSTARTED && !p._pollStarted && !p.element.dataset.adVideoSource) {
             p._pollStarted = true;
-
             const tick = () => {
               if (!p.enabled || p.ADPlaying || !p.youtube?.getCurrentTime) return;
               const now = p.youtube.getCurrentTime();
-              if (p._lastTime != null && now < p._lastTime - 0.2) p._recentCue = undefined; // rewound
+              if (p._lastTime != null && now < p._lastTime - 0.2) p._recentCue = undefined;
               p._lastTime = now;
-
-              if (!p.ADTrack) return;
               for (const c of p.ADTrack.cues) {
-                if (p._recentCue === c.startTime) continue; // de-dupe most recent
+                if (p._recentCue === c.startTime) continue;
                 if (Math.abs(now - c.startTime) <= 0.1) {
                   p._recentCue = c.startTime;
                   return speak(...Object.values(getCueData(c)), p);
                 }
               }
             };
-
             p._ytInterval = setInterval(tick, 100);
           }
         }
