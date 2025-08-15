@@ -1,10 +1,5 @@
 {
-	"devDependencies": {
-		"esbuild": "^0.25.8",
-		"nodemon": "^3.1.10"
-	},
-	"scripts": {
-		"build": "node build.mjs",
-		"build:watch": "nodemon --watch es6 --ext js --exec 'node build.mjs'"
+  "dependencies": {
+    "readium-speech": "github:readium/speech#build"
   }
 }
